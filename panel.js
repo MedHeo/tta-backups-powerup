@@ -2,10 +2,10 @@
 const t = window.TrelloPowerUp.iframe();
 
 // ВСТАВЬ СВОЙ URL ВЕБ-АППА (ОБЯЗАТЕЛЬНО с /exec на конце)
-const BACKEND_URL = 'https://script.google.com/macros/s/PASTE_YOUR_ID/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxLyhCoV4z1Ksqvf3BXzhHGgmUPvv13KqkQ3NX9GG2b6u1LpQurIcvvfRnTvC6EvuK0/exec';
 
 // ВСТАВЬ ТОТ ЖЕ СЕКРЕТ, ЧТО В Script Properties (BACKEND_SECRET)
-const BACKEND_SECRET = 'PASTE_YOUR_SECRET';
+const BACKEND_SECRET = '7a1407cfd686d70048968c82fc57cfd2cad9t';
 
 // ====== СОСТОЯНИЕ ======
 let state = {
@@ -127,3 +127,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('restore-btn')?.addEventListener('click', onRestoreSelected);
   loadBackups();
 });
+
