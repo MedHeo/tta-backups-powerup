@@ -1,22 +1,13 @@
-// ====== ПАРАМЕТРЫ ======
 const t = window.TrelloPowerUp.iframe();
 
-// ВСТАВЬ СВОЙ URL ВЕБ-АППА (ОБЯЗАТЕЛЬНО с /exec на конце)
+// ВСТАВЬ свой URL Apps Script (с /exec на конце)
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxLyhCoV4z1Ksqvf3BXzhHGgmUPvv13KqkQ3NX9GG2b6u1LpQurIcvvfRnTvC6EvuK0/exec';
-
-// ВСТАВЬ ТОТ ЖЕ СЕКРЕТ, ЧТО В Script Properties (BACKEND_SECRET)
+// И тот же секрет, что в Script Properties (BACKEND_SECRET)
 const BACKEND_SECRET = '7a1407cfd686d70048968c82fc57cfd2cad9t';
 
-// ====== СОСТОЯНИЕ ======
-let state = {
-  boardId: null,
-  backups: [],
-  selectedFileId: null
-};
+let state = { boardId: null, backups: [], selectedFileId: null };
 
-// ====== УТИЛИТЫ ======
 async function api(action, payload) {
-  // Шлём как x-www-form-urlencoded, чтобы не было preflight
   const body = new URLSearchParams();
   body.set('payload', JSON.stringify(Object.assign({ action, secret: BACKEND_SECRET }, payload || {})));
 
@@ -34,7 +25,7 @@ async function api(action, payload) {
 async function ensureBoardId() {
   if (!state.boardId) {
     const ctx = await t.getContext();
-    state.boardId = ctx.board; // id текущей доски Trello
+    state.boardId = ctx.board;
   }
   return state.boardId;
 }
@@ -42,35 +33,20 @@ async function ensureBoardId() {
 function renderList() {
   const root = document.getElementById('list');
   root.innerHTML = '';
-
-  if (!state.backups.length) {
-    root.innerHTML = '<div style="opacity:.7">Пока нет бэкапов. Нажми «Backup now».</div>';
-    return;
-  }
-
+  if (!state.backups.length) { root.innerHTML = '<div style="opacity:.7">Пока нет бэкапов. Нажми «Backup now».</div>'; return; }
   state.backups.forEach(group => {
     const h = document.createElement('div');
     h.style.marginTop = '8px';
     h.innerHTML = `<strong>${group.dateFolder}</strong>`;
     root.appendChild(h);
-
     group.files.forEach(f => {
       const row = document.createElement('div');
       row.className = 'item';
-      row.style.display = 'flex';
-      row.style.justifyContent = 'space-between';
-      row.style.padding = '8px 0';
-      row.style.borderBottom = '1px dashed #eee';
       const sizeKB = Math.round((f.size || 0) / 1024);
-      row.innerHTML = `
-        <div>${f.name} — ${sizeKB} KB</div>
-        <div>
-          <button data-id="${f.id}" class="select">Select</button>
-        </div>`;
+      row.innerHTML = `<div>${f.name} — ${sizeKB} KB</div><div><button data-id="${f.id}" class="select">Select</button></div>`;
       root.appendChild(row);
     });
   });
-
   root.querySelectorAll('.select').forEach(btn => {
     btn.addEventListener('click', () => {
       state.selectedFileId = btn.getAttribute('data-id');
@@ -80,51 +56,56 @@ function renderList() {
   });
 }
 
-// ====== ДЕЙСТВИЯ ======
 async function loadBackups() {
   await ensureBoardId();
   const res = await api('list_backups', { boardId: state.boardId });
-  if (!res || !res.ok) {
-    console.error('list_backups error:', res);
-    await t.alert({ message: 'Ошибка list_backups: ' + (res && res.error || 'unknown') });
-    return;
-  }
+  const s = document.getElementById('status');
+  if (!res || !res.ok) { s.textContent = 'Ошибка list_backups: ' + (res && res.error || 'unknown'); return; }
   state.backups = res.batches || [];
+  s.textContent = '';
   renderList();
 }
 
 async function onBackupNow() {
   await ensureBoardId();
   const res = await api('backup_now', { boardId: state.boardId });
-  if (!res || !res.ok) {
-    console.error('backup_now error:', res);
-    await t.alert({ message: 'Ошибка backup_now: ' + (res && res.error || 'unknown') });
-    return;
-  }
+  const s = document.getElementById('status');
+  if (!res || !res.ok) { s.textContent = 'Ошибка backup_now: ' + (res && res.error || 'unknown'); return; }
   await loadBackups();
   await t.alert({ message: 'Backup completed' });
 }
 
 async function onRestoreSelected() {
   await ensureBoardId();
-  if (!state.selectedFileId) return t.alert({ message: 'Сначала выбери бэкап (кнопка Select)' });
-
+  if (!state.selectedFileId) return t.alert({ message: 'Сначала выбери бэкап (Select)' });
   const name = document.getElementById('newBoardName').value || 'Restored board';
   const res = await api('restore', { fileId: state.selectedFileId, newBoardName: name });
-  if (!res || !res.ok) {
-    console.error('restore error:', res);
-    await t.alert({ message: 'Ошибка restore: ' + (res && res.error || 'unknown') });
-    return;
-  }
+  const s = document.getElementById('status');
+  if (!res || !res.ok) { s.textContent = 'Ошибка restore: ' + (res && res.error || 'unknown'); return; }
   await t.alert({ message: 'Восстановлено. Откроем новую доску…' });
   if (res.newBoardUrl) window.open(res.newBoardUrl, '_blank');
 }
 
-// ====== ИНИЦ ======
+async function onDiag() {
+  const s = document.getElementById('status');
+  const res = await api('health', {});
+  if (!res) { s.textContent = 'Нет ответа от бэкенда. Проверь BACKEND_URL / Web App доступ.'; return; }
+  s.innerHTML = [
+    `<b>secretPresent</b>: ${res.secretPresent}`,
+    ` | <b>trelloKeyPresent</b>: ${res.trelloKeyPresent}`,
+    ` | <b>trelloTokenPresent</b>: ${res.trelloTokenPresent}`,
+    ` | <b>trelloApiOk</b>: ${res.trelloApiOk}`,
+    ` | <b>driveWriteOk</b>: ${res.driveWriteOk}`,
+    (res.errors && res.errors.length ? `<div style="color:#f77">Errors: ${res.errors.join(' | ')}</div>` : '')
+  ].join('');
+  if (!res.ok) await t.alert({ message: 'Diagnostics: есть ошибки (см. статус)' });
+  else await t.alert({ message: 'Diagnostics: всё ок' });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('backup-now')?.addEventListener('click', onBackupNow);
   document.getElementById('refresh')?.addEventListener('click', loadBackups);
   document.getElementById('restore-btn')?.addEventListener('click', onRestoreSelected);
+  document.getElementById('diag')?.addEventListener('click', onDiag);
   loadBackups();
 });
-
