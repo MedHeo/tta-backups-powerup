@@ -4,26 +4,29 @@
   <meta charset="utf-8">
   <title>TTA Backups Panel</title>
   <style>
-    body { font-family: Inter, system-ui, sans-serif; margin: 16px; }
-    button { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; }
-    .row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-    .list { border: 1px solid #eee; border-radius: 10px; padding: 12px; max-height: 420px; overflow: auto; }
-    .item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; }
-    .item:last-child { border-bottom: none; }
-    input[type="text"] { padding: 6px 8px; border-radius: 6px; border: 1px solid #ccc; width: 280px; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 16px; color: #e6e6e6; background: #1f2937; }
+    button { padding: 8px 12px; border-radius: 8px; border: 1px solid #374151; background:#2d3748; color:#e6e6e6; cursor:pointer; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .row { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+    .list { border:1px solid #374151; border-radius:10px; padding:12px; max-height:420px; overflow:auto; background:#111827; }
+    .item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #374151; }
+    .item:last-child { border-bottom:none; }
+    input[type="text"] { padding:6px 8px; border-radius:6px; border:1px solid #374151; background:#111827; color:#e6e6e6; width:280px; }
   </style>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
-  <script defer src="panel.js"></script>
+  <script defer src="./panel.js"></script>
 </head>
 <body>
   <div class="row">
     <button id="backup-now">Backup now</button>
     <button id="refresh">Refresh list</button>
+    <button id="diag">Diagnostics</button>
   </div>
   <div class="row">
     <input id="newBoardName" type="text" placeholder="New board name for restore">
     <button id="restore-btn" disabled>Restore selected</button>
   </div>
+  <div id="status" style="opacity:.85; font-size:12px; margin-bottom:8px;"></div>
   <div class="list" id="list"></div>
 </body>
 </html>
