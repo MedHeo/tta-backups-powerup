@@ -1,7 +1,7 @@
 const t = window.TrelloPowerUp.iframe();
 
-const BACKEND_URL = 'ТУТ_ТВОЙ_HTTPS_ИЗ_AppsScript_exec';
-const BACKEND_SECRET = 'ТОТ_ЖЕ_BACKEND_SECRET_ЧТО_В_Script_properties';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxLyhCoV4z1Ksqvf3BXzhHGgmUPvv13KqkQ3NX9GG2b6u1LpQurIcvvfRnTvC6EvuK0/exec';
+const BACKEND_SECRET = '3f8b7c92-2b13-4f7e-a932-9eaa4b8731ab';
 
 let state = { boardId:null, selectedFileId:null, backups:[] };
 
@@ -58,3 +58,4 @@ document.getElementById('restore-btn').addEventListener('click', async () => {
   else { t.alert({ message: 'Restore done' }); }
 });
 loadList();
+
