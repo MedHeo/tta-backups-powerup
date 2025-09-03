@@ -1,7 +1,7 @@
 const t = window.TrelloPowerUp.iframe();
 
 // ВСТАВЬ свой URL Apps Script (с /exec на конце)
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxLyhCoV4z1Ksqvf3BXzhHGgmUPvv13KqkQ3NX9GG2b6u1LpQurIcvvfRnTvC6EvuK0/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwi2Wnb1cmP2eMWOMU6ZHkLKFlg6TCHp4x5xiENaoHZ73MeO-wXJ3GgpStxAnmYzSkg/exec';
 // И тот же секрет, что в Script Properties (BACKEND_SECRET)
 const BACKEND_SECRET = '7a1407cfd686d70048968c82fc57cfd2cad9t';
 
@@ -109,3 +109,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('diag')?.addEventListener('click', onDiag);
   loadBackups();
 });
+
