@@ -14,7 +14,7 @@
     input[type="text"] { padding:6px 8px; border-radius:6px; border:1px solid #374151; background:#111827; color:#e6e6e6; }
   </style>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
-  <script defer src="./panel.js"></script>
+  <script defer src="./panel.js?v=restore-layout-1"></script>
 </head>
 <body>
   <div class="row">
@@ -26,7 +26,8 @@
   <div class="row">
     <input id="pin" type="text" placeholder="PIN (Get PIN)" style="width:140px">
     <button id="get-pin">Get PIN</button>
-    <button id="restore-btn" disabled>Restore selected</button>
+    <button id="restore-btn" disabled>Restore selected (full)</button>
+    <button id="restore-layout-btn" disabled>Restore layout (lists+pos)</button>
   </div>
 
   <div id="status" style="opacity:.85; font-size:12px; margin-bottom:8px;"></div>
