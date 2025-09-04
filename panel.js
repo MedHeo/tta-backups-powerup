@@ -1,7 +1,7 @@
 const t = window.TrelloPowerUp.iframe();
 
 // ВСТАВЬ свой URL Apps Script (с /exec на конце)
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbywoHclS5_D_XGta1hxv2y9AgHzcGkjoIg_-zbIKyUavRV78F3qNFAm6ZHbAByjaaN1/exec';
+const BACKEND_URL = 'https://script.google.com/a/macros/dk.od.ua/s/AKfycbywoHclS5_D_XGta1hxv2y9AgHzcGkjoIg_-zbIKyUavRV78F3qNFAm6ZHbAByjaaN1/exec';
 
 let state = { boardId: null, backups: [], selectedFileId: null };
 
@@ -142,3 +142,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('diag')?.addEventListener('click', onDiag);
   loadBackups();
 });
+
