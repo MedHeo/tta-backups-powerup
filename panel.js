@@ -44,6 +44,7 @@ function renderList() {
     btn.addEventListener('click', () => {
       state.selectedFileId = btn.getAttribute('data-id');
       document.getElementById('restore-btn').disabled = !state.selectedFileId;
+      document.getElementById('restore-layout-btn').disabled = !state.selectedFileId;
       t.alert({ message: 'Backup selected' });
     });
   });
@@ -88,9 +89,8 @@ async function onRestoreSelected() {
   const pin = document.getElementById('pin').value.trim();
   if (!pin) return t.alert({ message: 'Введи PIN (Get PIN)' });
 
-  // overlay по умолчанию (мягкий откат); если хочешь жёсткий — mode:'overwrite'
   const res = await api('restore', {
-    mode: 'overlay',
+    mode: 'overlay', // мягкий полный откат (OLD списки вправо)
     boardId: state.boardId,
     fileId: state.selectedFileId,
     pin
@@ -99,6 +99,24 @@ async function onRestoreSelected() {
   const s = document.getElementById('status');
   if (!res || !res.ok) { s.textContent = 'Ошибка restore: ' + (res && res.error || 'unknown'); return; }
   await t.alert({ message: res.mode === 'overwrite' ? 'Доска перезаписана' : 'Готово: восстановили, OLD списки сдвинуты вправо' });
+}
+
+async function onRestoreLayout() {
+  await ensureBoardId();
+  if (!state.selectedFileId) return t.alert({ message: 'Сначала выбери бэкап (Select)' });
+  const pin = document.getElementById('pin').value.trim();
+  if (!pin) return t.alert({ message: 'Введи PIN (Get PIN)' });
+
+  const res = await api('restore_layout', {
+    boardId: state.boardId,
+    fileId: state.selectedFileId,
+    pin
+  });
+
+  const s = document.getElementById('status');
+  if (!res || !res.ok) { s.textContent = 'Ошибка restore_layout: ' + (res && res.error || 'unknown'); return; }
+  s.textContent = `Перемещено: ${res.moved||0}, разархивировано: ${res.unarchived||0}, пропущено: ${res.unchanged||0}, не найдено: ${res.missing||0}`;
+  await t.alert({ message: 'Layout восстановлен (lists + pos)' });
 }
 
 async function onDiag() {
@@ -119,10 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('backup-now')?.addEventListener('click', onBackupNow);
   document.getElementById('refresh')?.addEventListener('click', loadBackups);
   document.getElementById('restore-btn')?.addEventListener('click', onRestoreSelected);
+  document.getElementById('restore-layout-btn')?.addEventListener('click', onRestoreLayout);
   document.getElementById('get-pin')?.addEventListener('click', onGetPin);
   document.getElementById('diag')?.addEventListener('click', onDiag);
   loadBackups();
 });
-
-
-
